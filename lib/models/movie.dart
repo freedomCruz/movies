@@ -40,6 +40,14 @@ class Movie {
 
         return 'https://i.stack.imgur.com/GNhxO.png'; //Imagen por defecto cuando es null.
     }
+    
+    get fullBackdropPath {
+      if(posterPath != null ) {
+        return  'https://image.tmdb.org/t/p/w500$backdropPath'; //Es la forma como se llama un imagen en la api https://developers.themoviedb.org/3/getting-started/images
+      }
+
+        return 'https://i.stack.imgur.com/GNhxO.png'; //Imagen por defecto cuando es null.
+    }
 
     factory Movie.fromRawJson(String str) => Movie.fromJson(json.decode(str));
 
