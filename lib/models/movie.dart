@@ -42,7 +42,7 @@ class Movie {
     }
     
     get fullBackdropPath {
-      if(posterPath != null ) {
+      if(backdropPath != null ) {
         return  'https://image.tmdb.org/t/p/w500$backdropPath'; //Es la forma como se llama un imagen en la api https://developers.themoviedb.org/3/getting-started/images
       }
 

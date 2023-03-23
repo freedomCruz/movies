@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movies/models/models.dart';
+import 'package:movies/providers/movies_provider.dart';
+import 'package:provider/provider.dart';// Paquete de dart para que funcione el provider
 
 class CastingCards extends StatelessWidget {
 
@@ -8,36 +12,62 @@ class CastingCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only( bottom: 30, top: 20),
-      width: double.infinity,
-      height: 180,
-      // color: Colors.red,
-      child: ListView.builder(
-        itemCount: 10,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: ( _, int index) => _CastCard(),
-      ),
+    // Se llama al MoviesProvider del archivo movies_provider.dart
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+
+    return FutureBuilder(
+      future: moviesProvider.getMovieCast(movieId), 
+      builder: ( _ , AsyncSnapshot<List<Cast>> snapshot) {
+
+        if( !snapshot.hasData ) {
+          return Container(
+            constraints: const BoxConstraints(maxWidth: 150),
+            height: 180,
+            child: const CupertinoActivityIndicator(),
+          );
+        }
+
+        final List<Cast> cast = snapshot.data!;
+
+        return Container(
+          margin: const EdgeInsets.only( bottom: 30, top: 20),
+          width: double.infinity,
+          height: 200,
+          // color: Colors.red,
+          child: ListView.builder(
+            itemCount: cast.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: ( _, int index) => _CastCard( cast[index ]),
+          ),
+        );
+        
+      }
     );
+
+
   }
 }
 
 class _CastCard extends StatelessWidget {
+
+  final Cast actor;
+
+  const _CastCard( this.actor);
   
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric( horizontal: 10),
       width: 110,
-      height: 100,
+      height: 200,
       // color: Colors.green,
       child: Column(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: const FadeInImage(
-              placeholder: AssetImage('assets/no-image.jpg'),
-              image: NetworkImage('https://via.placeholder.com/150x300'),
+            child: FadeInImage(
+              placeholder: const AssetImage('assets/no-image.jpg'),
+              image: NetworkImage(actor.fullProfilePath),
               height: 140,
               width: 100,
               fit: BoxFit.cover,
@@ -45,12 +75,14 @@ class _CastCard extends StatelessWidget {
           ),
           const SizedBox(height: 5),
 
-          const Text('actor.name Nobre del actor lafjlsdkajflks',
-          
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          
+          Expanded(
+            child: Text(actor.name,
+            
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            
+            ),
           ),
         ]
       )

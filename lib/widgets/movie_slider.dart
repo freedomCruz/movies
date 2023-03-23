@@ -40,7 +40,7 @@ class _MovieSliderState extends State<MovieSlider> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 260,
+      height: 300,
       // color: Colors.red,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +52,7 @@ class _MovieSliderState extends State<MovieSlider> {
               child: Text( widget.title!, style: const TextStyle( fontSize: 20, fontWeight: FontWeight.bold),),
             ),
 
-          const SizedBox(height: 10,),
+          const SizedBox(height: 20,),
           Expanded(
             child: ListView.builder(
               controller: scrollController,
@@ -78,7 +78,7 @@ class _MovierPoster extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 130,
-      height: 190,
+      height: 200,
       // color: Colors.green,
       margin: const EdgeInsets.symmetric( horizontal: 10),
       child: Column(children: [
@@ -99,11 +99,13 @@ class _MovierPoster extends StatelessWidget {
 
         const SizedBox( height: 5,),
         
-        Text(
-          movie.title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
+        Expanded(
+          child: Text(
+            movie.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
         ), 
       
       ],

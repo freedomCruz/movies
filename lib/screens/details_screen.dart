@@ -128,9 +128,11 @@ class _Overview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-      child: Text( movie.overview,
-        textAlign: TextAlign.justify,
-        style: Theme.of(context).textTheme.titleMedium,
+      child: Expanded(
+        child: Text( movie.overview,
+          textAlign: TextAlign.justify,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       ),
     );
   }

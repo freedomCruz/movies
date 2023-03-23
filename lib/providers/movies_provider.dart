@@ -14,6 +14,8 @@ class MoviesProvider extends ChangeNotifier {
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
 
+  Map<int, List<Cast>> moviesCasting = {};
+
   int _popularPage = 0;   //para trabajar con el infinity scroll del movie_slieder
 
 
@@ -61,4 +63,22 @@ class MoviesProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<List<Cast>> getMovieCast ( int movieId ) async {
+      //TODO: revisar el mapa
+
+      if ( moviesCasting.containsKey(movieId)) return moviesCasting[movieId]!;
+
+      print('Pidiendo info al servidor - Cast');
+
+      final jsonData = await _getJsonData('/3/movie/$movieId/credits');
+      final creditsResponse = CreditsResponse.fromRawJson(jsonData);
+
+      // En la siguiente línea usamos el mapa declarado arriba para traer el Id de movie apuntando a la respuesta del mapeo en credits.response
+      moviesCasting[movieId] = creditsResponse.cast;
+
+      return creditsResponse.cast; 
+      // Ahora lo vamos a mostrar en casting_cards---->
+  }
+
 }
