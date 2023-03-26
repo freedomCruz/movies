@@ -33,6 +33,8 @@ class Movie {
     double voteAverage;
     int voteCount;
 
+    String? heroId;
+
     get fullPosterImg {
       if(posterPath != null ) {
         return  'https://image.tmdb.org/t/p/w500$posterPath'; //Es la forma como se llama un imagen en la api https://developers.themoviedb.org/3/getting-started/images
