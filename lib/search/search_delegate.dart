@@ -4,7 +4,8 @@ import 'package:movies/models/models.dart';
 import 'package:movies/providers/movies_provider.dart';
 import 'package:provider/provider.dart';
 
-class MovieSearchDelegate extends SearchDelegate {
+class MovieSearchDelegate extends SearchDelegate { // Se usa el extends para tomar las funciones del showSearh que viene del home_screen en el onPressed
+
 
   @override
   String? get searchFieldLabel => 'Buscar Película';
@@ -26,10 +27,16 @@ class MovieSearchDelegate extends SearchDelegate {
         icon: const Icon(Icons.arrow_back));
   }
 
+    late List<Movie> moviesResults;
+ //Variable para ser llamada en el builderResults
+
   @override
   Widget buildResults(BuildContext context) {
-    
-      return const Text('buildResults');
+
+   return ListView.builder(
+              itemCount: moviesResults.length,
+              itemBuilder: ( _ , int index) => _MovieItem(moviesResults[index]),
+            ); 
     
   }
 
@@ -46,17 +53,21 @@ class MovieSearchDelegate extends SearchDelegate {
      }    
 
       final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
-       //Debo retornar el Future que use provider para ello uso un widget Future
-       return FutureBuilder(
-        future: moviesProvider.searchMovies(query),  
-        builder: ( _, AsyncSnapshot<List<Movie>> snapshot) {
+       //-----Debo retornar el Future que use provider para ello uso un widget Future*****
+       //Ahora retorno no un Future sino un Stream para implementar el debouncer
+       moviesProvider.getSuggestionsByQuery( query );
+
+       return StreamBuilder<List<Movie>>(
+        stream: moviesProvider.suggestionStream,  
+        builder: ( _ , AsyncSnapshot<List<Movie>> snapshot) {
           if( !snapshot.hasData ) return _emptyContainer();
             
-            final movies = snapshot.data!;
+            final List<Movie> movies = snapshot.data!;
+            moviesResults = movies; //Para el builderResults
 
             return ListView.builder(
               itemCount: movies.length,
-              itemBuilder: ( _, int index) => _MovieItem(movies[index]),
+              itemBuilder: ( _ , int index) => _MovieItem(movies[index]),
             );
         },
         

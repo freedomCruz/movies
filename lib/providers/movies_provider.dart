@@ -1,6 +1,9 @@
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:movies/helpers/debouncer.dart';
 import 'package:movies/models/models.dart';
 import 'package:movies/models/search_responde.dart';
 
@@ -19,6 +22,12 @@ class MoviesProvider extends ChangeNotifier {
 
   int _popularPage = 0;   //para trabajar con el infinity scroll del movie_slieder
 
+  final debouncer = Debouncer(
+    duration: const Duration(milliseconds: 500 ),
+  );
+
+  final StreamController<List<Movie>> _suggestionStreamController = new StreamController.broadcast();
+  Stream<List<Movie>> get suggestionStream => _suggestionStreamController.stream;
 
   MoviesProvider() {
     print('MoviesProvider inicializado');
@@ -26,6 +35,7 @@ class MoviesProvider extends ChangeNotifier {
     getOnDisplayMovies();
 
     getPopularMovies();
+    // _suggestionStreamController.close();
   }
 
   // Optimizando el código para poder llamarlo en los métodos y llamar los datos json ya mapeados en los modelos
@@ -95,4 +105,18 @@ class MoviesProvider extends ChangeNotifier {
     return searchResponse.results;
   }
 
+  void getSuggestionsByQuery( String searchTerm ) {
+
+    debouncer.value = '';
+    debouncer.onValue = ( value ) async {
+      final results = await searchMovies(value);
+      _suggestionStreamController.add(results);
+    };
+
+    final timer = Timer.periodic(const Duration(milliseconds: 300), ( _ ) {
+      debouncer.value = searchTerm;
+    });
+
+    Future.delayed(const Duration(milliseconds: 301)).then(( _ ) => timer.cancel());
+  }
 }
